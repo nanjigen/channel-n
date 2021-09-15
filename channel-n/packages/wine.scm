@@ -74,7 +74,7 @@
 
 (define-public wine
   (package
-    (name "wine-5.2")
+    (name "wine")
     (version "5.2")
     (source
      (origin
@@ -348,3 +348,5 @@ integrate Windows applications into your desktop.")
              "--without-x")
        ,@(strip-keyword-arguments '(#:configure-flags #:phases)
                                   (package-arguments wine))))))
+
+wine
