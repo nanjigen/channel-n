@@ -364,7 +364,7 @@ integrate Windows applications into your desktop.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0a7ywvr267071md4qj6p6hbrcb7f5y4cq2s921ph7gc3knbaji73"))))
+                "1bw5z7aw9zbnn4br5dd62fc7ibvaxnvmk6h32b1fbwjjfy7j24vv"))))
     (build-system gnu-build-system)
     (inputs
      `(("cabextract" ,cabextract)
