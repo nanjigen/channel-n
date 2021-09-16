@@ -412,3 +412,4 @@ tweaking of various Wine settings.")
     (license license:lgpl2.1)))
 
 wine
+winetricks
