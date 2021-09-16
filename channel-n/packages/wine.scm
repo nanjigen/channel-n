@@ -22,7 +22,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages wine)
+(define-module (channel-n packages wine)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -87,7 +87,7 @@
               (string-append "https://dl.winehq.org/wine/source/" dir
                              "wine-" version ".tar.xz")))
        (sha256
-        (base32 "02yr0l5xl76iz9shn1xmlx05ab61kp4yviddp079vi27whbpi10r"))))
+        (base32 "0h2xm3dyy72yvyjgxn04nsf4r46q39pkx66fcc81vppay0s9q361"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
