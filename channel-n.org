@@ -228,3 +228,145 @@ integrate Windows applications into your desktop.")
 
 #+end_src:
 02yr0l5xl76iz9shn1xmlx05ab61kp4yviddp079vi27whbpi10r
+* fcitx5-mozc
+:PROPERTIES:
+:CREATED:  [2021-10-28 Thu 09:03]
+:ID:       b99ae0d5-644d-4968-aae0-21e943c94ab4
+:END:
+https://osdn.net/users/utuhiro/pf/utuhiro/files/
+Particularly port the [[https://osdn.net/downloads/users/36/36879/fcitx5-mozc-ut-bazel-20211009.PKGBUILD/][fctix5-mozc-ut-bazel]] PKGBUILD.
+
+This is a guix channel for mozc and the [[http://linuxplayers.g1.xrea.com/mozc-ut.html][UT dictionary project]]
+
+** Bazel build
+:PROPERTIES:
+:CREATED:  [2021-10-30 Sat 17:30]
+:ID:       c05dd9ab-2a75-429f-b4aa-44b97241c4cc
+:END:
+#+begin_src scheme
+(define-module (gnu packages fcitx5-mozc-ut-bazel)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix download)
+  #:use-module (guix build-system trivial))
+
+(define-public mozc
+  (package
+   (name "mozc")
+   (version "2.26.4520.102")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-"
+                                version
+                                ".tar.bz2"))
+            (sha256
+             (base32 "2a32d4a2552ae4d5bb2f2a6eb7348923a653da84bfcdccfd613a39c249eef920")))))
+  (build-system ))
+
+(define-public mozc
+  (package
+   (name "mozc")
+   (version "2.26.4520.102")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-"
+                                version
+                                ".tar.bz2"))
+            (sha256
+             (base32 "2a32d4a2552ae4d5bb2f2a6eb7348923a653da84bfcdccfd613a39c249eef920")))))
+  (build-system ))
+#+end_src
+
+** Python build
+:PROPERTIES:
+:CREATED:  [2021-10-30 Sat 17:30]
+:ID:       545cd7b3-156f-4200-935d-9ac34626768f
+:END:
+
+Another alternative is to use the python build system
+
+Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
+It needs 'python-six', is that something I add in the inputs?
+#+begin_src scheme :tangle channel-n/packages/fcitx-mozc-ut-gyp.scm
+(define-module (gnu packages fcitx5-mozc-ut-gyp)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
+  #:use-module (guix licenses)
+  #:use-module (guix packages)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ninja)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-build)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system python))
+
+(define-public mozc
+  ;; (let ((commit "d0d8a87c1ef19b7bd1d2c040e4ef38951b07fbd0")))
+  (package
+   (name "mozc")
+   (version "2.26.4520.102")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/google/mozc")
+                  (commit "d0d8a87c1ef19b7bd1d2c040e4ef38951b07fbd0")))
+            (sha256
+             (base32 "0xzjfrn0m8mc6k8vrggrf50x0ssbb9yq9c5qnval8gk8v78rpyl5"))))
+   ;; (file-name (git-file-name name version))
+   (build-system python-build-system)
+   (arguments
+    `(#:use-setuptools? #f
+      #:phases
+      (modify-phases %standard-phases
+          (add-before 'build 'bootstrap
+            (lambda _
+          ;;     ;; (substitute* "setup.py" (("build_mozc.py") ""))
+          ;;     ;; (invoke "python" "src/build_mozc.py" "gyp" "--gypdir=third_party")
+             (with-directory-excursion "src"
+              (invoke "python" "build_mozc.py" "gyp" "--gypdir=/gnu/store/x1d86yblmfx3545rwlkl84qjynw56ksd-python-gyp-0.0.0-0.5e2b3dd/bin" "--target_platform=Linux"))
+              #t))
+          (replace 'build
+                      (lambda _
+             (with-directory-excursion "src"
+                        (invoke "python" "build_mozc.py" "build" "-c" "Release"
+                                "server/server.gyp:mozc_server"
+                                "gui/gui.gyp:mozc_tool"
+                                "unix/fcitx5/fcitx5.gyp:fcitx5-mozc"))
+               ;; (setenv "HOME" (getcwd))
+                        #t))
+          )))
+  (inputs
+   `(("qtbase" ,qtbase-5)))
+  (propagated-inputs
+   `(("python-six" ,python-six)))
+  (native-inputs
+   `(("python-gyp" ,python-gyp)
+     ("python" ,python)
+     ("ninja" ,ninja)
+     ("pkg-config" ,pkg-config)))
+  (synopsis "A Japanese Input Method Editor designed for multi-platform")
+  (description
+   "Mozc is a Japanese Input Method Editor (IME) designed for multi-platform such as Android OS, Apple OS X, Chromium OS, GNU/Linux and Microsoft Windows. This OpenSource project originates from Google Japanese Input.")
+  (home-page "https://github.com/google/mozc")
+  (license bsd-3)))
+mozc
+#+end_src
+
+
+#+begin_src scheme
+(define-public mozc
+  (package
+   (name "mozc")
+   (version "2.26.4520.102")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://osdn.net/users/utuhiro/pf/utuhiro/dl/mozc-"
+                                version
+                                ".tar.bz2"))
+            (sha256
+             (base32 "2a32d4a2552ae4d5bb2f2a6eb7348923a653da84bfcdccfd613a39c249eef920")))))
+  (build-system ))
+
+#+end_src
