@@ -5,7 +5,11 @@
 Channel-n is a ~guix~ channel configuration for some packages not available on guix or nongnu.
 
 * Wine
-#+begin_src scheme :tangle wine.scm
+:PROPERTIES:
+:CREATED:  [2021-10-28 Thu 09:03]
+:ID:       ce4b3ad0-c11f-43bc-99ec-afb2e6107798
+:END:
+#+begin_src scheme :tangle channel-n/packages/wine.scm
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
