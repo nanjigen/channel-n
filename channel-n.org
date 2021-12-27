@@ -327,11 +327,12 @@ It needs 'python-six', is that something I add in the inputs?
           (add-before 'build 'bootstrap
             (lambda _
           ;;     ;; (substitute* "setup.py" (("build_mozc.py") ""))
-          ;;     ;; (invoke "python" "src/build_mozc.py" "gyp" "--gypdir=third_party")
+            ;; (let* ())
              (with-directory-excursion "src"
-              (invoke "python" "build_mozc.py" "gyp" "--gypdir=/gnu/store/x1d86yblmfx3545rwlkl84qjynw56ksd-python-gyp-0.0.0-0.5e2b3dd/bin" "--target_platform=Linux"))
+              (invoke "python" "src/build_mozc.py" "gyp" (string-append "--gypdir=" (getenv "PYTHONPATH"))))
+              ;; (invoke "python" "build_mozc.py" "gyp" "--gypdir=/gnu/store/x1d86yblmfx3545rwlkl84qjynw56ksd-python-gyp-0.0.0-0.5e2b3dd/bin" "--target_platform=Linux"))
               #t))
-          (replace 'build
+          (replace 'install
                       (lambda _
              (with-directory-excursion "src"
                         (invoke "python" "build_mozc.py" "build" "-c" "Release"
