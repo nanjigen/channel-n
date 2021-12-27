@@ -375,11 +375,28 @@ mozc
   (build-system ))
 
 #+end_src
+
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
 :ID:       89b9e756-a28b-4d03-9f11-4a83a65779a8
 :END:
+
+#+begin_src scheme :noweb yes :tangle channel-n/packages/emacs-n.scm
+(define-module (gnu packages emacs-n)
+  #:use-module ((guix licenses) #:prefix license)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module (guix cmake)
+  #:use-module (guix emacs)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages emacs)
+  #:use-module (guix utils))
+
+<<lookup2 definition>>
+#+end_src
+
 ** lookup2
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
