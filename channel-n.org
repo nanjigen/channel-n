@@ -322,14 +322,16 @@ It needs 'python-six', is that something I add in the inputs?
    (build-system python-build-system)
    (arguments
     `(#:use-setuptools? #f
+      #:configure-flags
+      #~(list (string-append "--with-gypdir="))
       #:phases
       (modify-phases %standard-phases
-          (add-before 'build 'bootstrap
+          (replace 'build 'bootstrap
             (lambda _
           ;;     ;; (substitute* "setup.py" (("build_mozc.py") ""))
             ;; (let* ())
              (with-directory-excursion "src"
-              (invoke "python" "src/build_mozc.py" "gyp" (string-append "--gypdir=" (getenv "PYTHONPATH"))))
+              (invoke "python" "build_mozc.py" "gyp" (string-append "--gypdir=" (getenv "PYTHONPATH"))))
               ;; (invoke "python" "build_mozc.py" "gyp" "--gypdir=/gnu/store/x1d86yblmfx3545rwlkl84qjynw56ksd-python-gyp-0.0.0-0.5e2b3dd/bin" "--target_platform=Linux"))
               #t))
           (replace 'install
