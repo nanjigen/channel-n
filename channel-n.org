@@ -384,15 +384,21 @@ mozc
 
 #+begin_src scheme :noweb yes :tangle channel-n/packages/emacs-n.scm
 (define-module (gnu packages emacs-n)
-  #:use-module ((guix licenses) #:prefix license)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module (guix cmake)
-  #:use-module (guix emacs)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system emacs)
+  #:use-module (guix build utils)
+  #:use-module (guix build gnu-build-system)
   #:use-module (gnu packages)
-  #:use-module (gnu packages cmake)
   #:use-module (gnu packages emacs)
-  #:use-module (guix utils))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages autotools)
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match))
 
 <<lookup2 definition>>
 #+end_src
@@ -403,7 +409,7 @@ mozc
 :ID:       de4bb81e-ad65-406e-9c9d-6107ab044fda
 :END:
 
-#+begin_src scheme
+#+begin_src scheme :noweb yes :noweb-ref lookup2 definition
 (define-public lookup2
   ;; From July 25, 2020
   ;; No releases available
