@@ -1,4 +1,4 @@
-(define-module (gnu packages emacs-n)
+(define-module (channel-n packages emacs-n)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)

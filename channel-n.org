@@ -9,7 +9,7 @@ Channel-n is a ~guix~ channel configuration for some packages not available on g
 :CREATED:  [2021-10-28 Thu 09:03]
 :ID:       ce4b3ad0-c11f-43bc-99ec-afb2e6107798
 :END:
-#+begin_src scheme :tangle channel-n/packages/wine.scm
+#+begin_src scheme :tangle packages/wine.scm
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -291,7 +291,7 @@ Another alternative is to use the python build system
 
 Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
 It needs 'python-six', is that something I add in the inputs?
-#+begin_src scheme :tangle channel-n/packages/fcitx-mozc-ut-gyp.scm
+#+begin_src scheme :tangle packages/fcitx-mozc-ut-gyp.scm
 (define-module (gnu packages fcitx5-mozc-ut-gyp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
@@ -384,7 +384,7 @@ mozc
 :ID:       89b9e756-a28b-4d03-9f11-4a83a65779a8
 :END:
 
-#+begin_src scheme :noweb yes :tangle channel-n/packages/emacs-n.scm
+#+begin_src scheme :noweb yes :tangle packages/emacs-n.scm
 (define-module (channel-n packages emacs-n)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

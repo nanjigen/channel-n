@@ -29,8 +29,7 @@
    (arguments
     `(#:use-setuptools? #f
       #:configure-flags
-      #~(list (string-append "--with-gypdir="
-                             (emacs:elpa-directory #$output)))
+      #~(list (string-append "--with-gypdir="))
       #:phases
       (modify-phases %standard-phases
           (replace 'build 'bootstrap
