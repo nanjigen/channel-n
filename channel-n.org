@@ -34,7 +34,7 @@ Channel-n is a ~guix~ channel configuration for some packages not available on g
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages wine)
+(define-module (channel-n packages wine)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -292,7 +292,7 @@ Another alternative is to use the python build system
 Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
 It needs 'python-six', is that something I add in the inputs?
 #+begin_src scheme :tangle channel-n/packages/fcitx-mozc-ut-gyp.scm
-(define-module (gnu packages fcitx5-mozc-ut-gyp)
+(define-module (channel-n packages fcitx5-mozc-ut-gyp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix licenses)
@@ -384,7 +384,7 @@ mozc
 :ID:       89b9e756-a28b-4d03-9f11-4a83a65779a8
 :END:
 
-#+begin_src scheme :noweb yes :tangle channel-n/packages/emacs.scm
+#+begin_src scheme :noweb yes :tangle channel-n/packages/emacs-lookup2.scm
 (define-module (channel-n packages emacs-lookup2)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)

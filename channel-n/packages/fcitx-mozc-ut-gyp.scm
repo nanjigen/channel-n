@@ -1,4 +1,4 @@
-(define-module (gnu packages fcitx5-mozc-ut-gyp)
+(define-module (channel-n packages fcitx5-mozc-ut-gyp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix licenses)
