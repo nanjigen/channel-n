@@ -291,7 +291,7 @@ Another alternative is to use the python build system
 
 Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
 It needs 'python-six', is that something I add in the inputs?
-#+begin_src scheme :tangle channel-n/packages/fcitx-mozc-ut-gyp.scm
+#+begin_src scheme :tangle channel-n/packages/fcitx5-mozc-ut-gyp.scm
 (define-module (channel-n packages fcitx5-mozc-ut-gyp)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
