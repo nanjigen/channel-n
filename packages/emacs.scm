@@ -6,7 +6,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system emacs)
   #:use-module (guix build utils)
-  #:use-module (guix build gnu-build-system)
   #:use-module (gnu packages)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
