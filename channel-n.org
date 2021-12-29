@@ -384,7 +384,7 @@ mozc
 :ID:       89b9e756-a28b-4d03-9f11-4a83a65779a8
 :END:
 
-#+begin_src scheme :noweb yes :tangle packages/emacs-n.scm
+#+begin_src scheme :noweb yes :tangle packages/emacs.scm
 (define-module (channel-n packages emacs)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
