@@ -435,13 +435,13 @@ mozc
                       ("emacs" ,emacs)))
      (arguments
       (list
-      #:modules '((guix build gnu-build-system)
-                  ((guix build emacs-build-system) #:prefix emacs:)
-                  (guix build utils)
-                  (guix build emacs-utils))
-      #:imported-modules `(,@%gnu-build-system-modules
-                           (guix build emacs-build-system)
-                           (guix build emacs-utils))
+       #:modules '((guix build gnu-build-system)
+                   ((guix build emacs-build-system) #:prefix emacs:)
+                   (guix build utils)
+                   (guix build emacs-utils))
+       #:imported-modules `(,@%gnu-build-system-modules
+                            (guix build emacs-build-system)
+                            (guix build emacs-utils))
        #:configure-flags
        #~(list "--with-emacs=emacs"
                (string-append "--with-lispdir=" (emacs:elpa-directory #$output))
