@@ -53,8 +53,10 @@
        #:tests? #f                       ; no check target
        #:phases
        #~(modify-phases %standard-phases
-                      ;; (delete 'unpack)
-                      (delete 'build))
+                        ;; (delete 'unpack)
+                        (add-after 'unpack 'autoreconf
+                                   (lambda _
+                                     (invoke "autoreconf" "-i"))))
        ;;                (add-after 'build 'build-lookup
        ;;                           (lambda* (#:key outputs #:allow-other-keys)
        ;;                             (invoke "make" "install"))))
@@ -64,3 +66,5 @@
      (description
       "Lookup is an integrated user interface for various dictionaries. You can search various on-line and off-line dictionaries simultaneously with lookup.")
      (license license:gpl2+))))
+
+emacs-lookup2
