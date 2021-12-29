@@ -9,6 +9,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match))
@@ -63,5 +64,3 @@
      (description
       "Lookup is an integrated user interface for various dictionaries. You can search various on-line and off-line dictionaries simultaneously with lookup.")
      (license license:gpl2+))))
-
-emacs-lookup2
