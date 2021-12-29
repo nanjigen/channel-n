@@ -385,7 +385,7 @@ mozc
 :END:
 
 #+begin_src scheme :noweb yes :tangle channel-n/packages/emacs.scm
-(define-module (channel-n packages emacs)
+(define-module (channel-n packages emacs-lookup2)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix gexp)
