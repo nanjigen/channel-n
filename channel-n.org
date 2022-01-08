@@ -377,6 +377,11 @@ mozc
   (build-system ))
 
 #+end_src
+* Japanese
+:PROPERTIES:
+:CREATED:  [2021-12-30 Thu 10:52]
+:ID:       a5e8dd1c-bb8f-42c9-998b-320ea2c0409a
+:END:
 
 * Emacs packages
 :PROPERTIES:
