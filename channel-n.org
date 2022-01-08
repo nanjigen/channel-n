@@ -491,6 +491,11 @@ Various tools to assist with writing, reading and analyzing Japanese.
 goldendict
 #+end_src
 
+** MeCab
+:PROPERTIES:
+:CREATED:  [2021-12-30 Thu 08:59]
+:ID:       964cce31-ce3d-4eab-acf8-5955991c9419
+:END:
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
