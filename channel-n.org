@@ -496,6 +496,9 @@ goldendict
 :CREATED:  [2021-12-30 Thu 08:59]
 :ID:       964cce31-ce3d-4eab-acf8-5955991c9419
 :END:
+https://taku910.github.io/mecab/
+
+I'd like to get a more reliable source for the ~tar~ than GDrive but also want to remain true to the author's source...
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
