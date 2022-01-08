@@ -499,6 +499,26 @@ goldendict
 https://taku910.github.io/mecab/
 
 I'd like to get a more reliable source for the ~tar~ than GDrive but also want to remain true to the author's source...
+#+begin_src scheme
+(define-public mecab
+  (package
+    (name "mecab")
+    (version "0.996")
+    (source
+     (origin
+      (method url-fetch)
+      (uri "https://drive.google.com/uc?export=download&id=0B4y35FiV1wh7cENtOXlicTFaRUE")
+
+      (sha256
+       (base32 "0ncwlqxl1hdn1x4v4kr2sn1sbbcgnhdphp0lcvk74nqkhdbk4wz0"))))
+    (build-system gnu-build-system)
+    (home-page "https://taku910.github.io/mecab")
+    (synopsis "MeCab: Yet Another Part-of-Speech and Morphological Analyzer")
+    (description
+     "MeCabは 京都大学情報学研究科−日本電信電話株式会社コミュニケーション科学基礎研究所 共同研究ユニットプロジェクトを通じて開発されたオープンソース 形態素解析エンジンです。")
+    (license license:gpl3)))
+
+#+end_src
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
