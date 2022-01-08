@@ -383,6 +383,39 @@ mozc
 :ID:       a5e8dd1c-bb8f-42c9-998b-320ea2c0409a
 :END:
 
+#+begin_src scheme :noweb yes :tangle channel-n/packages/japanese.scm
+(define-module (channel-n packages japanese)
+  #:use-module (ice-9 match)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix download)
+  #:use-module (guix gexp)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system qt)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages education)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
+
+<<goldendict>>
+#+end_src
+
+Various tools to assist with writing, reading and analyzing Japanese.
+
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
