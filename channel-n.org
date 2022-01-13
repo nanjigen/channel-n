@@ -416,6 +416,9 @@ mozc
   #:use-module (srfi srfi-1))
 
 <<goldendict>>
+
+<<python-autosub>>
+
 #+end_src
 
 Various tools to assist with writing, reading and analyzing Japanese.
@@ -561,6 +564,34 @@ I'd like to get a more reliable source for the ~tar~ than GDrive but also want t
      "MeCabは 京都大学情報学研究科−日本電信電話株式会社コミュニケーション科学基礎研究所 共同研究ユニットプロジェクトを通じて開発されたオープンソース 形態素解析エンジンです。")
     (license license:gpl3)))
 
+#+end_src
+** python-autosub
+
+#+begin_src scheme :noweb yes :noweb-ref python-autosub
+(define-public python-autosub
+  (package
+    (name "python-autosub")
+    (version "0.3.12")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "autosub" version))
+              (sha256
+               (base32
+                "01v0rkn8i2p8aqqnrrdhs8531zradydbgxd8mpdpdyjfgiybj6hj"))))
+    (build-system python-build-system)
+    (arguments
+    `(#:tests? #f                             ;no "test" target
+      #:python ,python-2))                    ;not compatible with Python 3
+    (native-inputs
+     `(("python2-progressbar" ,python2-progressbar)))
+    ;; (native-inputs (list ffmpeg))
+    (home-page "https://github.com/agermanidis/autosub")
+    (synopsis "Auto-generated subtitles for any video")
+    (description
+     "Autosub is a utility for automatic speech recognition and subtitle generation. It takes a video or an audio file as input, performs voice activity detection to find speech regions, makes parallel requests to Google Web Speech API to generate transcriptions for those regions, (optionally) translates them to a different language, and finally saves the resulting subtitles to disk. It supports a variety of input and output languages (to see which, run the utility with the argument --list-languages) and can currently produce subtitles in either the SRT format or simple JSON.")
+    (license license:x11)))
+
+python-autosub
 #+end_src
 * Emacs packages
 :PROPERTIES:
