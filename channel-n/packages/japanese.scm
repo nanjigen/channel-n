@@ -29,107 +29,73 @@
   #:use-module (channel-n packages japanese-xyz)
   #:use-module (srfi srfi-1))
 
-;; (define-public goldendict
-;;   (let ((commit "0e888db8746766984a4422af9972de8753d4d6c4"))
-;;     (package
-;;      (name "goldendict")
-;;      (version "2021-12-30")
-;;      (source
-;;       (origin
-;;        (method git-fetch)
-;;        (uri (git-reference
-;;              (url "https://github.com/goldendict/goldendict")
-;;              (commit commit)))
-;;        (file-name (git-file-name name version))
-;;        (sha256
-;;         (base32 "0fa1mrn8861gdlqq8a5w8wsylh56d8byj0p8zf025fa8s5n7ih7d"))))
-;;      (build-system gnu-build-system)
-;;      (inputs
-;;       (list ao
-;;             ffmpeg
-;;             bzip2
-;;             git
-;;             hunspell
-;;             libeb
-;;             libtiff
-;;             libvorbis
-;;             libxtst
-;;             libiconv
-;;             lzo
-;;             qtbase-5
-;;             qtmultimedia
-;;             qtsvg
-;;             qtwebkit
-;;             qtx11extras
-;;             xz
-;;             zlib))
-;;      (native-inputs
-;;       `(("pkg-config" ,pkg-config)
-;;         ("qmake" ,qtbase-5)
-;;         ;; ("liconv" ,libiconv)
-;;         ;; ("glibc-utf8-locales" ,glibc-utf8-locales)
-;;         ("qttools" ,qttools)))
-;;      (arguments
-;;       `(#:phases
-;;         (modify-phases %standard-phases
-;;                        (replace 'configure
-;;                                 (lambda* (#:key inputs outputs #:allow-other-keys)
-;;                                   (let ((iconv (assoc-ref inputs "libiconv")))
-;;                                     ;; qmake needs to find lrelease
-;;                                     (invoke "qmake" "goldendict.pro"
-;;                                             "CONFIG+=\"x86_64\""
-;;                                             (string-append "PREFIX="
-;;                                                            (assoc-ref outputs "out"))
-;;                                             (string-append "LIBS+=-L" iconv "/lib")
-;;                                             "LIBS+=-liconv"
-;;                                             "QMAKE_LRELEASE=lrelease"))))
-;;                        (replace 'build
-;;                                 (lambda* (#:key outputs #:allow-other-keys)
-;;                                   (invoke "make")))
-;;                        (replace 'install
-;;                                 (lambda* (#:key outputs #:allow-other-keys)
-;;                                   (invoke "make" "install"))))))
-;;      (home-page "http://www.goldendict.org/")
-;;      (synopsis "Goldendict: a feature-rich dictionary lookup program")
-;;      (description
-;;       "GoldenDict is a feature-rich dictionary lookup program, supporting multiple dictionary formats (StarDict/Babylon/Lingvo/Dictd/AARD/MDict/SDict) and online dictionaries, featuring perfect article rendering with the complete markup, illustrations and other content retained, and allowing you to type in words without any accents or correct case.")
-;;      (license license:gpl3+))))
-;; 
-;; goldendict
-
-(define-module (channel-n packages japanese-xyz)
-  #:use-module (ice-9 match)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix git-download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system)
-  #:use-module (guix build-system python)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
-
-(define-public python2-progressbar
-  (package
-    (name "python2-progressbar")
-    (version "2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "progressbar" version))
+(define-public goldendict
+  (let ((commit "0e888db8746766984a4422af9972de8753d4d6c4"))
+    (package
+     (name "goldendict")
+     (version "2021-12-30")
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/goldendict/goldendict")
+             (commit commit)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0qvckfpkdk7a35r9lc201rkwc18grb4ddbv276sj7qm2km9cp0ax"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/niltonvolpato/python-progressbar")
-    (synopsis "Text progress bar library for Python")
-    (description
-     "A text progress bar is typically used to display the progress of a long
-running operation, providing a visual cue that processing is underway.")
-    ;; Either or both of these licenses may be selected.
-    (license (list license:lgpl2.1+ license:bsd-3))))
+        (base32 "0fa1mrn8861gdlqq8a5w8wsylh56d8byj0p8zf025fa8s5n7ih7d"))))
+     (build-system gnu-build-system)
+     (inputs
+      (list ao
+            ffmpeg
+            bzip2
+            git
+            hunspell
+            libeb
+            libtiff
+            libvorbis
+            libxtst
+            libiconv
+            lzo
+            qtbase-5
+            qtmultimedia
+            qtsvg
+            qtwebkit
+            qtx11extras
+            xz
+            zlib))
+     (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("qmake" ,qtbase-5)
+        ;; ("liconv" ,libiconv)
+        ;; ("glibc-utf8-locales" ,glibc-utf8-locales)
+        ("qttools" ,qttools)))
+     (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+                       (replace 'configure
+                                (lambda* (#:key inputs outputs #:allow-other-keys)
+                                  (let ((iconv (assoc-ref inputs "libiconv")))
+                                    ;; qmake needs to find lrelease
+                                    (invoke "qmake" "goldendict.pro"
+                                            "CONFIG+=\"x86_64\""
+                                            (string-append "PREFIX="
+                                                           (assoc-ref outputs "out"))
+                                            (string-append "LIBS+=-L" iconv "/lib")
+                                            "LIBS+=-liconv"
+                                            "QMAKE_LRELEASE=lrelease"))))
+                       (replace 'build
+                                (lambda* (#:key outputs #:allow-other-keys)
+                                  (invoke "make")))
+                       (replace 'install
+                                (lambda* (#:key outputs #:allow-other-keys)
+                                  (invoke "make" "install"))))))
+     (home-page "http://www.goldendict.org/")
+     (synopsis "Goldendict: a feature-rich dictionary lookup program")
+     (description
+      "GoldenDict is a feature-rich dictionary lookup program, supporting multiple dictionary formats (StarDict/Babylon/Lingvo/Dictd/AARD/MDict/SDict) and online dictionaries, featuring perfect article rendering with the complete markup, illustrations and other content retained, and allowing you to type in words without any accents or correct case.")
+     (license license:gpl3+))))
 
-python2-progressbar
+goldendict
 
 (define-public python-autosub
   (package
