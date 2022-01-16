@@ -53,21 +53,21 @@
          (replace 'configure
            (lambda* (#:key inputs ouputs #:allow-other-keys)
              (let ((gyp (assoc-ref inputs "python2-gyp")))
-               ;; (chdir "src")
-               ;; (add-installed-pythonpath inputs outputs)
-               ;; (setenv (string-append "GYP_DEFINES=" "\""
-               ;;                        "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
-               ;;                        "use_libzinnia=1"
-               ;;                        "use_libprotobuf=1"
-               ;;                        "use_libabseil=1"
-               ;;                        "\""))
+               (chdir "src")
+               (add-installed-pythonpath inputs outputs)
+               (setenv (string-append "GYP_DEFINES=" "\""
+                                      "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
+                                      "use_libzinnia=1"
+                                      "use_libprotobuf=1"
+                                      "use_libabseil=1"
+                                      "\""))
                (invoke "python" "build_mozc.py" "gyp"
                        (string-append "--gypdir=" gyp "/bin")
                        (string-append "--server_dir="
                                       (assoc-ref ouputs "outs") "/lib/mozc")
                        "--target_platform=Linux")
-               #t)))
-               ;; )))
+               ;; #t)))
+               )))
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              ;; (add-installed-pythonpath inputs outputs)
@@ -75,19 +75,18 @@
                      "server/server.gyp:mozc_server"
                      "gui/gui.gyp:mozc_tool"
                      "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
-         ;; (delete 'check)
-         ;; (replace 'install
-         ;;   (lambda* (#:key outputs #:allow-other-keys)
-         ;;     (add-installed-pythonpath inputs outputs)
-         ;;     (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
-         ;;     (setenv "_bldtype=Release")
-         ;;     (invoke "scripts/install_server")
-         ;;     (invoke "install" "-d"
-         ;;             (string-append (assoc-ref outputs "out")
-         ;;                            "/share/licenses/fcitx5-mozc"))))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
+             (setenv "_bldtype=Release")
+             (invoke "scripts/install_server")
+             (invoke "install" "-d"
+                     (string-append (assoc-ref outputs "out")
+                                    "/share/licenses/fcitx5-mozc"))))
          )))
     (inputs
-     `(("python2-gyp" ,python2-gyp)
      `(("python-gyp" ,python-gyp-patch)
        ;; ("gtk2" ,gtk+-2)
        ;; ("zinnia" ,zinnia)
@@ -95,7 +94,6 @@
     (propagated-inputs
      `(("six" ,python-six)))
     (native-inputs
-     `(("python2" ,python-2)
      `(("python" ,python)
        ("qtbase" ,qtbase-5)
        ("ninja" ,ninja)
