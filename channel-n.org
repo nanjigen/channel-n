@@ -291,74 +291,116 @@ Another alternative is to use the python build system
 
 Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
 It needs 'python-six', is that something I add in the inputs?
-#+begin_src scheme :tangle channel-n/packages/fcitx5-mozc-ut-gyp.scm
-(define-module (channel-n packages fcitx5-mozc-ut-gyp)
+#+begin_src scheme :tangle channel-n/packages/fcitx5-mozc.scm
+(define-module (channel-n packages fcitx5-mozc)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix utils)
   #:use-module (guix licenses)
   #:use-module (guix packages)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages pkg-config)
+  #:use-module (guix download)
+  #:use-module (guix gexp)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
+  #:use-module (gnu packages fcitx5)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ninja)
+  #:use-module (gnu packages ocr)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
+  #:use-module (channel-n packages)
+  #:use-module (channel-n packages japanese-xyz)
   #:use-module (guix git-download)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1))
 
-(define-public mozc
-  ;; (let ((commit "d0d8a87c1ef19b7bd1d2c040e4ef38951b07fbd0")))
+(define-public fcitx5-mozc-ut
   (package
-   (name "mozc")
-   (version "2.26.4520.102")
-   (source (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/google/mozc")
-                  (commit "d0d8a87c1ef19b7bd1d2c040e4ef38951b07fbd0")))
-            (sha256
-             (base32 "0xzjfrn0m8mc6k8vrggrf50x0ssbb9yq9c5qnval8gk8v78rpyl5"))))
-   ;; (file-name (git-file-name name version))
-   (build-system python-build-system)
-   (arguments
-    `(#:use-setuptools? #f
-      #:configure-flags
-      #~(list (string-append "--with-gypdir="))
-      #:phases
-      (modify-phases %standard-phases
-          (replace 'build 'bootstrap
-            (lambda _
-          ;;     ;; (substitute* "setup.py" (("build_mozc.py") ""))
-            ;; (let* ())
-             (with-directory-excursion "src"
-              (invoke "python" "build_mozc.py" "gyp" (string-append "--gypdir=" (getenv "PYTHONPATH"))))
-              ;; (invoke "python" "build_mozc.py" "gyp" "--gypdir=/gnu/store/x1d86yblmfx3545rwlkl84qjynw56ksd-python-gyp-0.0.0-0.5e2b3dd/bin" "--target_platform=Linux"))
-              #t))
-          (replace 'install
-                      (lambda _
-             (with-directory-excursion "src"
-                        (invoke "python" "build_mozc.py" "build" "-c" "Release"
-                                "server/server.gyp:mozc_server"
-                                "gui/gui.gyp:mozc_tool"
-                                "unix/fcitx5/fcitx5.gyp:fcitx5-mozc"))
-               ;; (setenv "HOME" (getcwd))
-                        #t))
-          )))
-  (inputs
-   `(("qtbase" ,qtbase-5)))
-  (propagated-inputs
-   `(("python-six" ,python-six)))
-  (native-inputs
-   `(("python-gyp" ,python-gyp)
-     ("python" ,python)
-     ("ninja" ,ninja)
-     ("pkg-config" ,pkg-config)))
-  (synopsis "A Japanese Input Method Editor designed for multi-platform")
-  (description
-   "Mozc is a Japanese Input Method Editor (IME) designed for multi-platform such as Android OS, Apple OS X, Chromium OS, GNU/Linux and Microsoft Windows. This OpenSource project originates from Google Japanese Input.")
-  (home-page "https://github.com/google/mozc")
-  (license bsd-3)))
-mozc
+    (name "fcitx5-mozc-ut")
+    (version "2.26.4520.102")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fcitx/mozc")
+                    (commit "59c4b009a1fd642f7b6070356b9ddc73c30fd99b")))
+              (sha256
+               (base32 "0xzjfrn0m8mc6k8vrggrf50x0ssbb9yq9c5qnval8gk8v78rpyl5"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:use-setuptools? #f
+       #:tests? #f
+       ;; #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         ;; (add-after 'unpack 'symlink
+         ;;   (lambda* (#:key inputs #:allow-other-keys)
+         ;;     (let ((gyp (assoc-ref inputs "python-gyp")))
+         ;;       (rmdir "src/third_party/gyp/")
+         ;;       (symlink gyp "src/third_party/gyp"))))
+         (replace 'configure
+           (lambda* (#:key inputs ouputs #:allow-other-keys)
+             (let ((gyp (assoc-ref inputs "python2-gyp")))
+               (chdir "src")
+               (add-installed-pythonpath inputs outputs)
+               (setenv (string-append "GYP_DEFINES=" "\""
+                                      "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
+                                      "use_libzinnia=1"
+                                      "use_libprotobuf=1"
+                                      "use_libabseil=1"
+                                      "\""))
+               (invoke "python" "build_mozc.py" "gyp"
+                       (string-append "--gypdir=" gyp "/bin")
+                       (string-append "--server_dir="
+                                      (assoc-ref ouputs "outs") "/lib/mozc")
+                       "--target_platform=Linux")
+               ;; #t)))
+               )))
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; (add-installed-pythonpath inputs outputs)
+             (invoke "python" "build_mozc.py" "build" "-c" "Release"
+                     "server/server.gyp:mozc_server"
+                     "gui/gui.gyp:mozc_tool"
+                     "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (add-installed-pythonpath inputs outputs)
+             (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
+             (setenv "_bldtype=Release")
+             (invoke "scripts/install_server")
+             (invoke "install" "-d"
+                     (string-append (assoc-ref outputs "out")
+                                    "/share/licenses/fcitx5-mozc"))))
+         )))
+    (inputs
+     `(("python-gyp" ,python-gyp-patch)
+       ;; ("gtk2" ,gtk+-2)
+       ;; ("zinnia" ,zinnia)
+       ))
+    (propagated-inputs
+     `(("six" ,python-six)))
+    (native-inputs
+     `(("python" ,python)
+       ("qtbase" ,qtbase-5)
+       ("ninja" ,ninja)
+       ("fcitx5" ,fcitx5)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "A Japanese Input Method Editor designed for multi-platform")
+    (description
+     "Mozc is a Japanese Input Method Editor (IME) designed for multi-platform
+ such as Android OS, Apple OS X, Chromium OS, GNU/Linux and Microsoft Windows.
+ This OpenSource project originates from Google Japanese Input.")
+    (home-page "https://github.com/google/mozc")
+    (license bsd-3)))
+fcitx5-mozc-ut
 #+end_src
 
 
@@ -377,6 +419,7 @@ mozc
   (build-system ))
 
 #+end_src
+
 * Japanese
 :PROPERTIES:
 :CREATED:  [2021-12-30 Thu 10:52]
@@ -412,24 +455,30 @@ mozc
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
-  #:use-module (channel-n packages japanese-xyz)
+  ;; #:use-module (channel-n packages)
+  ;; #:use-module (channel-n packages japanese-xyz)
   #:use-module (srfi srfi-1))
 
 <<goldendict>>
 
-<<python-autosub>>
+;; <<python-autosub>>
 
 #+end_src
 
 Various tools to assist with writing, reading and analyzing Japanese.
 
 ** japanese-xyz
+:PROPERTIES:
+:CREATED:  [2022-01-16 Sun 13:24]
+:ID:       478a4303-1881-4b3c-9122-5f974efb0d52
+:END:
 
 #+begin_src scheme :noweb yes :noweb-ref python2-progressbar :tangle channel-n/packages/japanese-xyz.scm
 (define-module (channel-n packages japanese-xyz)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system)
