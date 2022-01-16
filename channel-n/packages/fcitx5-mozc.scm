@@ -17,6 +17,8 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
+  #:use-module (channel-n packages)
+  #:use-module (channel-n packages japanese-xyz)
   #:use-module (guix git-download)
   #:use-module (guix build-system)
   #:use-module (guix build-system glib-or-gtk)
@@ -86,6 +88,7 @@
          )))
     (inputs
      `(("python2-gyp" ,python2-gyp)
+     `(("python-gyp" ,python-gyp-patch)
        ;; ("gtk2" ,gtk+-2)
        ;; ("zinnia" ,zinnia)
        ))
@@ -93,6 +96,7 @@
      `(("six" ,python-six)))
     (native-inputs
      `(("python2" ,python-2)
+     `(("python" ,python)
        ("qtbase" ,qtbase-5)
        ("ninja" ,ninja)
        ("fcitx5" ,fcitx5)
