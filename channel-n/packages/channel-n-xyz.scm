@@ -1,4 +1,4 @@
-(define-module (channel-n packages japanese-xyz)
+(define-module (channel-n packages channel-n-xyz)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -11,14 +11,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz))
 
-
-(define-public python-gyp-patch
+(define-public python-gyp-latest
   (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
         (revision "0"))
-    (package
-      (name "python-gyp")
-      ;; Google does not release versions,
-      ;; based on second most recent commit date.
+    (package/inherit python-gyp
+    (name "python-gyp-latest")
+      ;; (inherit python-gyp)
       (version (git-version "0.0.0" revision commit))
       (source
        (origin
@@ -28,18 +26,9 @@
          (uri (git-reference
                (url "https://chromium.googlesource.com/external/gyp")
                (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1"))))
-      (build-system python-build-system)
-      (home-page "https://gyp.gsrc.io/")
-      (synopsis "GYP is a Meta-Build system")
-      (description
-       "GYP builds build systems for large, cross platform applications.
-It can be used to generate XCode projects, Visual Studio projects, Ninja build
-files, and Makefiles.")
-      (license license:bsd-3))))
+      (sha256
+       (base32
+        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
 
 (define-public python2-progressbar
   (package
