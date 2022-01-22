@@ -367,7 +367,7 @@ It needs 'python-six', is that something I add in the inputs?
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (channel-n packages)
+  ;; #:use-module (channel-n packages)
   #:use-module (channel-n packages channel-n-xyz)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
