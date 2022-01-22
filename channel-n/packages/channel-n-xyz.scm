@@ -51,4 +51,4 @@
 ;;     (license (list license:lgpl2.1+ license:bsd-3))))
 
 ;; python2-progressbar
-python-gyp-patch
+python-gyp-latest

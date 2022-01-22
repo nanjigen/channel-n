@@ -4,6 +4,62 @@
 
 Channel-n is a ~guix~ channel configuration for some packages not available on guix or nongnu.
 
+* channel-n
+:PROPERTIES:
+:CREATED:  [2022-01-22 Sat 18:34]
+:ID:       0f391280-21bd-44aa-a310-2c752d884a48
+:END:
+#+begin_src scheme :tangle channel-n/packages.scm
+;;; GNU Guix --- Functional package management for GNU
+;;;
+;;; This file is NOT part of GNU Guix.
+;;;
+;;; This program is free software: you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation, either version 3 of the License, or
+;;; (at your option) any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (channel-n packages)
+  #:use-module ((gnu packages) #:prefix gnu:)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
+  #:export (search-patch
+            search-patches
+            %patch-path))
+
+(define (search-patch file-name)
+  "Search the patch FILE-NAME.  Raise an error if not found."
+  (or (search-path (%patch-path) file-name)
+      (raise (formatted-message (G_ "~a: patch not found")
+                                file-name))))
+
+(define-syntax-rule (search-patches file-name ...)
+  "Return the list of absolute file names corresponding to each
+FILE-NAME found in %PATCH-PATH."
+  (list (search-patch file-name) ...))
+
+(define %channel-root
+  (find (lambda (path)
+          (file-exists? (string-append path "/channel-n/packages.scm")))
+        %load-path))
+
+;; (define %patch-path
+;;   (make-parameter
+;;    (cons
+;;     (string-append %channel-root "/flat/packages/patches")
+;;     (gnu:%patch-path))))
+
+#+end_src
+
 * Wine
 :PROPERTIES:
 :CREATED:  [2021-10-28 Thu 09:03]
@@ -291,20 +347,20 @@ Another alternative is to use the python build system
 
 Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the default in =(python-build-sysytem)=, we'll have to use file substitution with the =(substite* file)= guile function - outlined [[https://guix.gnu.org/manual/en/html_node/Build-Utilities.html#index-substitute_002a][here]].
 It needs 'python-six', is that something I add in the inputs?
-#+begin_src scheme :tangle channel-n/packages/fcitx5-mozc.scm
-(define-module (channel-n packages fcitx5-mozc)
-  #:use-module (ice-9 match)
+#+begin_src scheme :tangle channel-n/packages/fcitx5-mozc-ut.scm
+(define-module (channel-n packages fcitx5-mozc-ut)
+  ;; #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
-  #:use-module (guix utils)
+  ;; #:use-module (guix utils)
   #:use-module (gnu packages fcitx5)
-  #:use-module (gnu packages gtk)
+  ;; #:use-module (gnu packages gtk)
   #:use-module (gnu packages ninja)
-  #:use-module (gnu packages ocr)
+  ;; #:use-module (gnu packages ocr)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
@@ -312,14 +368,12 @@ It needs 'python-six', is that something I add in the inputs?
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (channel-n packages)
-  #:use-module (channel-n packages japanese-xyz)
+  #:use-module (channel-n packages channel-n-xyz)
   #:use-module (guix git-download)
-  #:use-module (guix build-system)
-  #:use-module (guix build-system glib-or-gtk)
-  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial)
-  #:use-module (srfi srfi-1))
+  ;; #:export (python-gyp-latest)
+  ;; #:use-module (srfi srfi-1)
+  )
 
 (define-public fcitx5-mozc-ut
   (package
@@ -329,62 +383,55 @@ It needs 'python-six', is that something I add in the inputs?
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/fcitx/mozc")
-                    (commit "59c4b009a1fd642f7b6070356b9ddc73c30fd99b")))
+                    (commit "1485c1f60ae444f62a304b252ee384d10f06e614")))
               (sha256
                (base32 "0xzjfrn0m8mc6k8vrggrf50x0ssbb9yq9c5qnval8gk8v78rpyl5"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f
        #:tests? #f
-       ;; #:python ,python-2
        #:phases
        (modify-phases %standard-phases
-         ;; (add-after 'unpack 'symlink
-         ;;   (lambda* (#:key inputs #:allow-other-keys)
-         ;;     (let ((gyp (assoc-ref inputs "python-gyp")))
-         ;;       (rmdir "src/third_party/gyp/")
-         ;;       (symlink gyp "src/third_party/gyp"))))
+    ;;      ;; (add-after 'unpack 'symlink
+    ;;      ;;   (lambda* (#:key inputs #:allow-other-keys)
+    ;;      ;;     (let ((gyp (assoc-ref inputs "python-gyp")))
+    ;;      ;;       (rmdir "src/third_party/gyp/")
+    ;;      ;;       (symlink gyp "src/third_party/gyp"))))
          (replace 'configure
            (lambda* (#:key inputs ouputs #:allow-other-keys)
-             (let ((gyp (assoc-ref inputs "python2-gyp")))
-               (chdir "src")
-               (add-installed-pythonpath inputs outputs)
-               (setenv (string-append "GYP_DEFINES=" "\""
-                                      "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
-                                      "use_libzinnia=1"
-                                      "use_libprotobuf=1"
-                                      "use_libabseil=1"
-                                      "\""))
+             (let ((gyp (assoc-ref inputs "python-gyp-latest")))
+               ;; (chdir "src")
+               ;; (setenv (string-append "GYP_DEFINES=" "\""
+               ;;                        "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
+               ;;                        "use_libzinnia=1"
+               ;;                        "use_libprotobuf=1"
+               ;;                        "use_libabseil=1"
+               ;;                        "\""))
                (invoke "python" "build_mozc.py" "gyp"
                        (string-append "--gypdir=" gyp "/bin")
                        (string-append "--server_dir="
                                       (assoc-ref ouputs "outs") "/lib/mozc")
                        "--target_platform=Linux")
-               ;; #t)))
                )))
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             ;; (add-installed-pythonpath inputs outputs)
-             (invoke "python" "build_mozc.py" "build" "-c" "Release"
-                     "server/server.gyp:mozc_server"
-                     "gui/gui.gyp:mozc_tool"
-                     "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
-         (delete 'check)
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (add-installed-pythonpath inputs outputs)
-             (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
-             (setenv "_bldtype=Release")
-             (invoke "scripts/install_server")
-             (invoke "install" "-d"
-                     (string-append (assoc-ref outputs "out")
-                                    "/share/licenses/fcitx5-mozc"))))
+    ;;      (replace 'build
+    ;;        (lambda* (#:key outputs #:allow-other-keys)
+    ;;          (invoke "python" "build_mozc.py" "build" "-c" "Release"
+    ;;                  "server/server.gyp:mozc_server"
+    ;;                  "gui/gui.gyp:mozc_tool"
+    ;;                  "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
+    ;;      ;; (delete 'check)
+    ;;      ;; (replace 'install
+    ;;      ;;   (lambda* (#:key outputs #:allow-other-keys)
+    ;;      ;;     (add-installed-pythonpath inputs outputs)
+    ;;      ;;     (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
+    ;;      ;;     (setenv "_bldtype=Release")
+    ;;      ;;     (invoke "scripts/install_server")
+    ;;      ;;     (invoke "install" "-d"
+    ;;      ;;             (string-append (assoc-ref outputs "out")
+    ;;      ;;                            "/share/licenses/fcitx5-mozc"))))
          )))
     (inputs
-     `(("python-gyp" ,python-gyp-patch)
-       ;; ("gtk2" ,gtk+-2)
-       ;; ("zinnia" ,zinnia)
-       ))
+     `(("python-gyp" ,python-gyp-latest)))
     (propagated-inputs
      `(("six" ,python-six)))
     (native-inputs
@@ -467,14 +514,14 @@ fcitx5-mozc-ut
 
 Various tools to assist with writing, reading and analyzing Japanese.
 
-** japanese-xyz
+** channel-n-xyz
 :PROPERTIES:
 :CREATED:  [2022-01-16 Sun 13:24]
 :ID:       478a4303-1881-4b3c-9122-5f974efb0d52
 :END:
 
-#+begin_src scheme :noweb yes :noweb-ref python2-progressbar :tangle channel-n/packages/japanese-xyz.scm
-(define-module (channel-n packages japanese-xyz)
+#+begin_src scheme :tangle channel-n/packages/channel-n-xyz.scm
+(define-module (channel-n packages channel-n-xyz)
   #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -487,27 +534,47 @@ Various tools to assist with writing, reading and analyzing Japanese.
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz))
 
-(define-public python2-progressbar
-  (package
-    (name "python2-progressbar")
-    (version "2.5")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "progressbar" version))
-       (sha256
-        (base32
-         "0qvckfpkdk7a35r9lc201rkwc18grb4ddbv276sj7qm2km9cp0ax"))))
-    (build-system python-build-system)
-    (home-page "https://github.com/niltonvolpato/python-progressbar")
-    (synopsis "Text progress bar library for Python")
-    (description
-     "A text progress bar is typically used to display the progress of a long
-running operation, providing a visual cue that processing is underway.")
-    ;; Either or both of these licenses may be selected.
-    (license (list license:lgpl2.1+ license:bsd-3))))
+(define-public python-gyp-latest
+  (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
+        (revision "0"))
+    (package/inherit python-gyp
+    (name "python-gyp-latest")
+      ;; (inherit python-gyp)
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+      (sha256
+       (base32
+        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
 
-python2-progressbar
+;; (define-public python2-progressbar
+;;   (package
+;;     (name "python2-progressbar")
+;;     (version "2.5")
+;;     (source
+;;      (origin
+;;        (method url-fetch)
+;;        (uri (pypi-uri "progressbar" version))
+;;        (sha256
+;;         (base32
+;;          "0qvckfpkdk7a35r9lc201rkwc18grb4ddbv276sj7qm2km9cp0ax"))))
+;;     (build-system python-build-system)
+;;     (home-page "https://github.com/niltonvolpato/python-progressbar")
+;;     (synopsis "Text progress bar library for Python")
+;;     (description
+;;      "A text progress bar is typically used to display the progress of a long
+;; running operation, providing a visual cue that processing is underway.")
+;;     ;; Either or both of these licenses may be selected.
+;;     (license (list license:lgpl2.1+ license:bsd-3))))
+
+;; python2-progressbar
+python-gyp-latest
 #+end_src
 
 
