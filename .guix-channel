@@ -1,5 +1,5 @@
 ;; -*- mode: scheme; -*-
 
 (channel
- (version 0)
- (url "https://github.com/nanjigen/channel-n/channel-n"))
+ (version 0))
+ ;; (url "https://github.com/nanjigen/channel-n/channel-n"))
