@@ -368,12 +368,31 @@ It needs 'python-six', is that something I add in the inputs?
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   ;; #:use-module (channel-n packages)
-  #:use-module (channel-n packages channel-n-xyz)
+  ;; #:use-module (channel-n packages channel-n-xyz)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
   ;; #:export (python-gyp-latest)
   ;; #:use-module (srfi srfi-1)
   )
+
+(define-public python-gyp-latest
+  (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
+        (revision "0"))
+    (package/inherit python-gyp
+    (name "python-gyp-latest")
+      ;; (inherit python-gyp)
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+      (sha256
+       (base32
+        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
 
 (define-public fcitx5-mozc-ut
   (package
