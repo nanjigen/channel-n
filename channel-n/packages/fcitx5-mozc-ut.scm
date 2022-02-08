@@ -1,12 +1,15 @@
 (define-module (channel-n packages fcitx5-mozc-ut)
-  ;; #:use-module (ice-9 match)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
-  ;; #:use-module (guix utils)
+  #:use-module (guix profiles)
+  #:use-module (guix transformations)
+  #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages fcitx5)
   ;; #:use-module (gnu packages gtk)
   #:use-module (gnu packages ninja)
@@ -17,17 +20,43 @@
   #:use-module (gnu packages python-build)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
-  #:use-module (channel-n packages)
-  #:use-module (channel-n packages channel-n-xyz)
   #:use-module (guix git-download)
   #:use-module (guix build-system python)
-  ;; #:export (python-gyp-latest)
-  ;; #:use-module (srfi srfi-1)
-  )
+  #:use-module (srfi srfi-1))
 
-(define-public fcitx5-mozc-ut
+;; (define latest-python-gyp
+;;   ((options->transformation
+;;     '((with-commit . "python-gyp=d6c5dd51dc3a60bf4ff32a5256713690a1a10376")))
+;;    python-gyp))
+
+;; (define guix-guile
+;;   ;; latest-guix?
+;;   (and=> (assoc-ref (package-native-inputs guix) "guile") car))
+
+(define-public python-gyp-1
+  (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
+        (revision "0"))
+    ;; (package/inherit python-gyp
+    (package
+    (inherit python-gyp)
+    ;; (name "python-gyp")
+      ;; (version (git-version "0.0.0" revision commit))
+    (version "1")
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+      (sha256
+       (base32
+        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
+
+(define-public fcitx5-mozc
   (package
-    (name "fcitx5-mozc-ut")
+    (name "fcitx5-mozc")
     (version "2.26.4520.102")
     (source (origin
               (method git-fetch)
@@ -42,15 +71,21 @@
        #:tests? #f
        #:phases
        (modify-phases %standard-phases
-    ;;      ;; (add-after 'unpack 'symlink
-    ;;      ;;   (lambda* (#:key inputs #:allow-other-keys)
-    ;;      ;;     (let ((gyp (assoc-ref inputs "python-gyp")))
-    ;;      ;;       (rmdir "src/third_party/gyp/")
-    ;;      ;;       (symlink gyp "src/third_party/gyp"))))
+         ;; (add-after 'unpack 'symlink
+         ;;   (lambda* (#:key inputs #:allow-other-keys)
+         ;;     (let ((gyp (assoc-ref inputs "python-gyp")))
+         ;;       (invoke "ls" "src/third_party")
+         ;;       (rmdir "src/third_party/gyp")
+         ;;       (symlink gyp "src/third_party/gyp"))))
+         ;; (add-after 'unpack 'figure-out
+         ;;   (lambda* (#:key inputs #:allow-other-keys)
+         ;;     (let ((gyp (assoc-ref inputs "python-gyp-latest")))
+         ;;      (invoke "which" "python-gyp"))))
          (replace 'configure
-           (lambda* (#:key inputs ouputs #:allow-other-keys)
-             (let ((gyp (assoc-ref inputs "python-gyp-latest")))
-               ;; (chdir "src")
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((gyp (assoc-ref inputs "python-gyp-1")))
+               ;; (which "python-gyp")
+               (chdir "src")
                ;; (setenv (string-append "GYP_DEFINES=" "\""
                ;;                        "document_dir=" (assoc-ref ouputs "outs") "/share/doc/mozc"
                ;;                        "use_libzinnia=1"
@@ -59,29 +94,31 @@
                ;;                        "\""))
                (invoke "python" "build_mozc.py" "gyp"
                        (string-append "--gypdir=" gyp "/bin")
-                       (string-append "--server_dir="
-                                      (assoc-ref ouputs "outs") "/lib/mozc")
+                       ;; (string-append "--server_dir="
+                       ;;                (assoc-ref outputs "outs") "/lib/mozc")
                        "--target_platform=Linux")
-               )))
-    ;;      (replace 'build
-    ;;        (lambda* (#:key outputs #:allow-other-keys)
-    ;;          (invoke "python" "build_mozc.py" "build" "-c" "Release"
-    ;;                  "server/server.gyp:mozc_server"
-    ;;                  "gui/gui.gyp:mozc_tool"
-    ;;                  "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
-    ;;      ;; (delete 'check)
-    ;;      ;; (replace 'install
-    ;;      ;;   (lambda* (#:key outputs #:allow-other-keys)
-    ;;      ;;     (add-installed-pythonpath inputs outputs)
-    ;;      ;;     (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
-    ;;      ;;     (setenv "_bldtype=Release")
-    ;;      ;;     (invoke "scripts/install_server")
-    ;;      ;;     (invoke "install" "-d"
-    ;;      ;;             (string-append (assoc-ref outputs "out")
-    ;;      ;;                            "/share/licenses/fcitx5-mozc"))))
-         )))
+               ))
+               ))))
+         ;; ))) ;; args
+         ;; (replace 'build
+         ;;   (lambda* (#:key outputs #:allow-other-keys)
+         ;;     (invoke "python" "build_mozc.py" "build" "-c" "Release"
+         ;;             "server/server.gyp:mozc_server"
+         ;;             "gui/gui.gyp:mozc_tool"
+         ;;             "unix/fcitx5/fcitx5.gyp:fcitx5-mozc")))
+         ;; (delete 'check)
+         ;; (replace 'install
+         ;;   (lambda* (#:key outputs #:allow-other-keys)
+         ;;     (add-installed-pythonpath inputs outputs)
+         ;;     (setenv (string-append "PREFIX=" (assoc-ref outputs "out")))
+         ;;     (setenv "_bldtype=Release")
+         ;;     (invoke "scripts/install_server")
+         ;;     (invoke "install" "-d"
+         ;;             (string-append (assoc-ref outputs "out")
+         ;;                            "/share/licenses/fcitx5-mozc"))))
+        ;;
     (inputs
-     `(("python-gyp" ,python-gyp-latest)))
+     `(("python-gyp-1" ,python-gyp-1)))
     (propagated-inputs
      `(("six" ,python-six)))
     (native-inputs
@@ -97,4 +134,16 @@
  This OpenSource project originates from Google Japanese Input.")
     (home-page "https://github.com/google/mozc")
     (license bsd-3)))
-fcitx5-mozc-ut
+
+;; (define transform
+;;   (options->transformation
+;;     '((with-commit . "python-gyp=d6c5dd51dc3a60bf4ff32a5256713690a1a10376"))))
+
+;; (packages->manifest
+;;  (list (transform (specification->package "python-gyp"))))
+
+;; (define-public replace-gyp
+;;   (package-input-rewriting `((,python-gyp . ,python-gyp-latest))))
+
+;; python-gyp-latest
+;; fcitx5-mozc-ut
