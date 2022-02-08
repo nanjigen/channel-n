@@ -232,7 +232,7 @@ integrate Windows applications into your desktop.")
 
 #+end_src:
 02yr0l5xl76iz9shn1xmlx05ab61kp4yviddp079vi27whbpi10r
-* mono
+* PROJECT Write updated ~mono~ package definition
 :PROPERTIES:
 :CREATED:  [2022-01-31 Mon 19:52]
 :ID:       65080c98-e540-4461-8dd8-affb1344ce0e
@@ -258,6 +258,16 @@ A more updated version of ~mono~, ~guix~ has only =mono@4.4.1.0=
   #:use-module (guix utils)
   #:use-module (guix download))
 
+#+end_src
+
+** NEXT Check why this def doesn't add =msbuild=
+:PROPERTIES:
+:CREATED:  [2022-02-08 Tue 19:21]
+:ID:       6ac4a839-573d-4388-a015-0a63dba7c683
+:END:
+
+May need to add as a separate definition
+#+begin_src scheme :tangle channel-n/packages/mono.scm
 (define-public mono-6.4
     (package
     (inherit mono)
@@ -287,6 +297,7 @@ A more updated version of ~mono~, ~guix~ has only =mono@4.4.1.0=
          (delete 'fix-includes))))
     ))
 #+end_src
+
 * fcitx5-mozc
 :PROPERTIES:
 :CREATED:  [2021-10-28 Thu 09:03]
