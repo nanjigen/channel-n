@@ -525,7 +525,7 @@ Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the
 
 #+end_src
 
-* Japanese
+* PROJECT Write helper package defintions for Japanese
 :PROPERTIES:
 :CREATED:  [2021-12-30 Thu 10:52]
 :ID:       a5e8dd1c-bb8f-42c9-998b-320ea2c0409a
@@ -572,75 +572,13 @@ Because the ~mozc~ python build doesn't use the standard ~setup.py~ which is the
 
 Various tools to assist with writing, reading and analyzing Japanese.
 
-** channel-n-xyz
-:PROPERTIES:
-:CREATED:  [2022-01-16 Sun 13:24]
-:ID:       478a4303-1881-4b3c-9122-5f974efb0d52
-:END:
-
-#+begin_src scheme :tangle channel-n/packages/channel-n-xyz.scm
-(define-module (channel-n packages channel-n-xyz)
-  #:use-module (ice-9 match)
-  #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix git-download)
-  #:use-module (guix utils)
-  #:use-module (guix build-system)
-  #:use-module (guix build-system python)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
-
-(define-public python-gyp-latest
-  (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
-        (revision "0"))
-    (package/inherit python-gyp
-    (name "python-gyp-latest")
-      ;; (inherit python-gyp)
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         ;; Google does not release tarballs,
-         ;; git checkout is needed.
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://chromium.googlesource.com/external/gyp")
-               (commit commit)))
-      (sha256
-       (base32
-        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
-
-;; (define-public python2-progressbar
-;;   (package
-;;     (name "python2-progressbar")
-;;     (version "2.5")
-;;     (source
-;;      (origin
-;;        (method url-fetch)
-;;        (uri (pypi-uri "progressbar" version))
-;;        (sha256
-;;         (base32
-;;          "0qvckfpkdk7a35r9lc201rkwc18grb4ddbv276sj7qm2km9cp0ax"))))
-;;     (build-system python-build-system)
-;;     (home-page "https://github.com/niltonvolpato/python-progressbar")
-;;     (synopsis "Text progress bar library for Python")
-;;     (description
-;;      "A text progress bar is typically used to display the progress of a long
-;; running operation, providing a visual cue that processing is underway.")
-;;     ;; Either or both of these licenses may be selected.
-;;     (license (list license:lgpl2.1+ license:bsd-3))))
-
-;; python2-progressbar
-;; python-gyp-latest
-#+end_src
-
-
 ** Goldendict
 :PROPERTIES:
 :CREATED:  [2021-12-30 Thu 12:01]
 :ID:       fcad768e-024d-49eb-8b04-2ffc8356f801
 :END:
+
+This works fairly well. Perhaps add build options as stated on the [[https://github.com/goldendict/goldendict#how-to-build][github page]].
 #+begin_src scheme :noweb yes :noweb-ref goldendict
 (define-public goldendict
   (let ((commit "0e888db8746766984a4422af9972de8753d4d6c4"))
@@ -707,11 +645,9 @@ Various tools to assist with writing, reading and analyzing Japanese.
      (description
       "GoldenDict is a feature-rich dictionary lookup program, supporting multiple dictionary formats (StarDict/Babylon/Lingvo/Dictd/AARD/MDict/SDict) and online dictionaries, featuring perfect article rendering with the complete markup, illustrations and other content retained, and allowing you to type in words without any accents or correct case.")
      (license license:gpl3+))))
-
-goldendict
 #+end_src
 
-** MeCab
+** TODO Write ~MeCab~ definition
 :PROPERTIES:
 :CREATED:  [2021-12-30 Thu 08:59]
 :ID:       964cce31-ce3d-4eab-acf8-5955991c9419
@@ -739,7 +675,11 @@ I'd like to get a more reliable source for the ~tar~ than GDrive but also want t
     (license license:gpl3)))
 
 #+end_src
-** python-autosub
+** TODO write ~python-autosub~ definition
+:PROPERTIES:
+:CREATED:  [2022-01-16 Sun 13:24]
+:ID:       4696ef8b-3655-4b57-9d15-cfd8bb95467d
+:END:
 
 #+begin_src scheme :noweb yes :noweb-ref python-autosub
 (define-public python-autosub
@@ -767,6 +707,71 @@ I'd like to get a more reliable source for the ~tar~ than GDrive but also want t
 
 python-autosub
 #+end_src
+
+** channel-n-xyz
+:PROPERTIES:
+:CREATED:  [2022-01-16 Sun 13:24]
+:ID:       478a4303-1881-4b3c-9122-5f974efb0d52
+:END:
+
+#+begin_src scheme :tangle channel-n/packages/channel-n-xyz.scm
+(define-module (channel-n packages channel-n-xyz)
+  #:use-module (ice-9 match)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix packages)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz))
+
+(define-public python-gyp-latest
+  (let ((commit "d6c5dd51dc3a60bf4ff32a5256713690a1a10376")
+        (revision "0"))
+    (package/inherit python-gyp
+    (name "python-gyp-latest")
+      ;; (inherit python-gyp)
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         ;; Google does not release tarballs,
+         ;; git checkout is needed.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://chromium.googlesource.com/external/gyp")
+               (commit commit)))
+      (sha256
+       (base32
+        "0mphj2nb5660mh4cxv51ivjykzqjrqjrwsz8hpp9sw7c8yrw4qi1")))))))
+
+;; (define-public python2-progressbar
+;;   (package
+;;     (name "python2-progressbar")
+;;     (version "2.5")
+;;     (source
+;;      (origin
+;;        (method url-fetch)
+;;        (uri (pypi-uri "progressbar" version))
+;;        (sha256
+;;         (base32
+;;          "0qvckfpkdk7a35r9lc201rkwc18grb4ddbv276sj7qm2km9cp0ax"))))
+;;     (build-system python-build-system)
+;;     (home-page "https://github.com/niltonvolpato/python-progressbar")
+;;     (synopsis "Text progress bar library for Python")
+;;     (description
+;;      "A text progress bar is typically used to display the progress of a long
+;; running operation, providing a visual cue that processing is underway.")
+;;     ;; Either or both of these licenses may be selected.
+;;     (license (list license:lgpl2.1+ license:bsd-3))))
+
+;; python2-progressbar
+;; python-gyp-latest
+#+end_src
+
+
 * Emacs packages
 :PROPERTIES:
 :CREATED:  [2021-11-17 Wed 15:42]
@@ -847,7 +852,7 @@ python-autosub
        ;;                           (lambda* (#:key outputs #:allow-other-keys)
        ;;                             (invoke "make" "install"))))
        ))
-     (home-page "https://github.com/lookup2/lookup2")
+     (home-page "https://lookup2.github.io/")
      (synopsis "Lookup2 package for emacs")
      (description
       "Lookup is an integrated user interface for various dictionaries. You can search various on-line and off-line dictionaries simultaneously with lookup.")
