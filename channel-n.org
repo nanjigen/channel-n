@@ -4,62 +4,6 @@
 
 Channel-n is a ~guix~ channel configuration for some packages not available on guix or nongnu.
 
-* channel-n
-:PROPERTIES:
-:CREATED:  [2022-01-22 Sat 18:34]
-:ID:       0f391280-21bd-44aa-a310-2c752d884a48
-:END:
-#+begin_src scheme :tangle channel-n/packages.scm
-;;; GNU Guix --- Functional package management for GNU
-;;;
-;;; This file is NOT part of GNU Guix.
-;;;
-;;; This program is free software: you can redistribute it and/or modify
-;;; it under the terms of the GNU General Public License as published by
-;;; the Free Software Foundation, either version 3 of the License, or
-;;; (at your option) any later version.
-;;;
-;;; This program is distributed in the hope that it will be useful,
-;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;;; GNU General Public License for more details.
-;;;
-;;; You should have received a copy of the GNU General Public License
-;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-(define-module (channel-n packages)
-  #:use-module ((gnu packages) #:prefix gnu:)
-  #:use-module (guix diagnostics)
-  #:use-module (guix i18n)
-  #:use-module (srfi srfi-1)
-  #:export (search-patch
-            search-patches
-            %patch-path))
-
-(define (search-patch file-name)
-  "Search the patch FILE-NAME.  Raise an error if not found."
-  (or (search-path (%patch-path) file-name)
-      (raise (formatted-message (G_ "~a: patch not found")
-                                file-name))))
-
-(define-syntax-rule (search-patches file-name ...)
-  "Return the list of absolute file names corresponding to each
-FILE-NAME found in %PATCH-PATH."
-  (list (search-patch file-name) ...))
-
-(define %channel-root
-  (find (lambda (path)
-          (file-exists? (string-append path "/channel-n/packages.scm")))
-        %load-path))
-
-;; (define %patch-path
-;;   (make-parameter
-;;    (cons
-;;     (string-append %channel-root "/flat/packages/patches")
-;;     (gnu:%patch-path))))
-
-#+end_src
-
 * Wine
 :PROPERTIES:
 :CREATED:  [2021-10-28 Thu 09:03]
@@ -870,4 +814,59 @@ python-autosub
      (license license:gpl2+))))
 
 emacs-lookup2
+#+end_src
+* channel-n general
+:PROPERTIES:
+:CREATED:  [2022-01-22 Sat 18:34]
+:ID:       0f391280-21bd-44aa-a310-2c752d884a48
+:END:
+#+begin_src scheme :tangle channel-n/packages.scm
+;;; GNU Guix --- Functional package management for GNU
+;;;
+;;; This file is NOT part of GNU Guix.
+;;;
+;;; This program is free software: you can redistribute it and/or modify
+;;; it under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation, either version 3 of the License, or
+;;; (at your option) any later version.
+;;;
+;;; This program is distributed in the hope that it will be useful,
+;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (channel-n packages)
+  #:use-module ((gnu packages) #:prefix gnu:)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
+  #:use-module (srfi srfi-1)
+  #:export (search-patch
+            search-patches
+            %patch-path))
+
+(define (search-patch file-name)
+  "Search the patch FILE-NAME.  Raise an error if not found."
+  (or (search-path (%patch-path) file-name)
+      (raise (formatted-message (G_ "~a: patch not found")
+                                file-name))))
+
+(define-syntax-rule (search-patches file-name ...)
+  "Return the list of absolute file names corresponding to each
+FILE-NAME found in %PATCH-PATH."
+  (list (search-patch file-name) ...))
+
+(define %channel-root
+  (find (lambda (path)
+          (file-exists? (string-append path "/channel-n/packages.scm")))
+        %load-path))
+
+;; (define %patch-path
+;;   (make-parameter
+;;    (cons
+;;     (string-append %channel-root "/flat/packages/patches")
+;;     (gnu:%patch-path))))
+
 #+end_src
