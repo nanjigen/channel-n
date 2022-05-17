@@ -915,6 +915,124 @@ A scheme definition based off
   #:use-module (nongnu packages wine))
 #+end_src
 
+** wine-wrapper
+:PROPERTIES:
+:CREATED:  [2022-05-16 Mon 14:28]
+:ID:       a7c3640a-d0ea-4806-9eba-011ee339c632
+:END:
+This function is lifted from the definition of [[https://gitlab.com/guix-gaming-channels/games/-/blob/master/games/packages/kingdomcome-deliverance.scm][Kingdom Come: Deliverance]] in the [[https://gitlab.com/guix-gaming-channels/games/-/blob/master/games/packages/kingdomcome-deliverance.scm][Guix Gaming Channel]].
+
+#+begin_src scheme
+;; TODO: Use Guile instead?
+(define make-wine-wrapper
+  '(lambda* (file name #:key (game-path name))
+     ;; From (guix utils).  TODO: Can we do shorter?
+     (define* (string-replace-substring str substr replacement
+                                        #:optional
+                                        (start 0)
+                                        (end (string-length str)))
+       "Replace all occurrences of SUBSTR in the START--END range of STR by
+REPLACEMENT."
+       (match (string-length substr)
+         (0
+          (error "string-replace-substring: empty substring"))
+         (substr-length
+          (let loop ((start  start)
+                     (pieces (list (substring str 0 start))))
+            (match (string-contains str substr start end)
+              (#f
+               (string-concatenate-reverse
+                (cons (substring str start) pieces)))
+              (index
+               (loop (+ index substr-length)
+                     (cons* replacement
+                            (substring str start index)
+                            pieces))))))))
+     ;; TODO: Use with-output-to-string.
+     (define (environment-variables)
+       (string-join
+        '("XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}"
+          "SM_COLLECTION_PATH=${SM_COLLECTION_PATH:-$XDG_DATA_HOME}"
+          "GUIX_GAMING_PATH=${GUIX_GAMING_PATH:-$HOME/Games}")
+        (string #\newline)))
+     (define (shell-name name)
+       (string-replace-substring (string-upcase name) " " "_"))
+     (define (file-name name)
+       (string-replace-substring (string-downcase name) " " "-"))
+     (define (wine-prefix name)
+       (string-append (shell-name name) "_WINEPREFIX"))
+     (define (save-path-variable name)
+       (string-append (shell-name name) "_SAVE_PATH"))
+     (define (game-path-variable name)
+       (string-append (shell-name name) "_PATH"))
+     (define (game-environment-variables name)
+       (let ((shell-name (shell-name name))
+             (file-name (file-name name))
+             (wine-prefix (wine-prefix name))
+             (save-path-variable (save-path-variable name))
+             (game-path-variable (game-path-variable name)))
+         (string-join
+          (list (format #f "~a=${~a:-$GUIX_SAVE_PATH/~a}"
+                        save-path-variable save-path-variable game-path)
+                (format #f "~a=${~a:-$GUIX_GAMING_PATH/~a}"
+                        game-path-variable game-path-variable game-path)
+                (format #f "~a=${~a:-$HOME/.cache/~a}"
+                        wine-prefix wine-prefix file-name))
+          (string #\newline))))
+     (define (dxvk-install prefix)
+       ;; TODO: Detect installed version and install if mismatch.
+       ;; TODO: Can we make a functional WINEPREFIX?
+       (string-join
+        (list (format #f "export WINEPREFIX=\"~a\"" prefix)
+              "if [ ! -e \"$WINEPREFIX\" ]; then"
+              "wine64 wineboot" ; TODO: Ungexp.
+              ;; TODO: wineboot exits before the prefix is fully generated.
+              ;; Can we avoid this loop?
+              "while [ ! -e \"$WINEPREFIX/system.reg\" ]; do"
+              "sleep 1"
+              "done"
+              "setup_dxvk install"      ; TODO: Ungexp.
+              "fi")
+        (string #\newline)))
+     (define (link-saves from to)
+       (string-join
+        (list (format #f "mkdir -p \"~a\"" from)
+              (format #f "ln -nsfv \"~a\" \"~a\"" from to))
+        (string #\newline)))
+
+     (with-output-to-file file
+       (lambda _
+         (format #t "#!~a/bin/bash~%~%" (assoc-ref %build-inputs "bash")) ; TODO: Ungexp.
+         (format #t "~a~%~%" (environment-variables))
+         (format #t "~a~%~%" (game-environment-variables name))
+         ;; Running the game generates a "Launcher.log" in the current directory.
+         (format #t
+                 (string-append "cd \"$~a\" || \\~%"
+                                "  { echo >&2 \"'$~a' is not a folder\" && exit 1 ; }~%~%")
+                 (game-path-variable name)
+                 (game-path-variable name))
+         (format #t
+                 (string-append "[ -e Bin/Win64/d3dcompiler_46.dll ] || \\~%"
+                                "  cp Bin/Win64Shared/d3dcompiler_46.dll Bin/Win64/d3dcompiler_46.dll~%"))
+         (format #t (string-append "[ -e Bin/Win64/d3dcompiler_47.dll ] || \\~& "
+                                   "  cp Bin/Win64Shared/d3dcompiler_47.dll Bin/Win64/d3dcompiler_47.dll~%~%"))
+         ;; dxvk gives a huge performance boost.
+         (format #t "~a~%~%" (dxvk-install (string-append "$" (wine-prefix name))))
+         ;; Saves are buried deep within the prefix, let's dig them out:
+         (format #t "~a~%~%" (link-saves
+                              (string-append "$" (save-path-variable name))
+                              "$WINEPREFIX/drive_c/users/$USER/Saved Games/kingdomcome"))
+         ;; TODO: Ungexp wine.
+         (format #t "exec wine64 Bin/Win64/KingdomCome.exe \"$@\"")))
+     (chmod file #o755)))
+#+end_src
+
+** public definition
+:PROPERTIES:
+:CREATED:  [2022-05-16 Mon 14:33]
+:ID:       4dfbc704-8989-4338-b61a-a2cb7986e6df
+:END:
+
 #+begin_src scheme
 
 #+end_src
