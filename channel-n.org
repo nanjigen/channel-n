@@ -1034,6 +1034,79 @@ REPLACEMENT."
 :END:
 
 #+begin_src scheme
+;; TODO: Use wine-dxvk.
+;; TODO: Containerize.
+(define-public supermemo18
+  (package
+    (name "supermemo18")
+    (version "18.4")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs
+     `(("bash" ,bash-minimal)
+       ("wine" ,wine64)
+       ("dxvk" ,dxvk-next)
+       ("icon"
+        ,(origin
+           (method url-fetch)
+           (uri "https://images.gog.com/4db3a5894306bf74e6f6d9dcbec42314b7a760de8a4af3bc633dec4ec1f714cb.png")
+           (sha256
+            (base32
+             "0vbk2vpsfvaimfi8w0bj47j6xmx1xixmkrhbdhcs3jgcjwh8zi7a"))))))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 match))
+         (let* ((out (assoc-ref %outputs "out"))
+                (bash (assoc-ref %build-inputs "bash"))
+                (wine (assoc-ref %build-inputs "wine"))
+                (dxvk (assoc-ref %build-inputs "dxvk"))
+                (launcher (string-append out "/bin/kingdomcome-deliverance"))
+                (make-wine-wrapper ,make-wine-wrapper)
+                (icon-source (assoc-ref %build-inputs "icon"))
+                (icon (string-append out "/share/kingdomcome-deliverance/"
+                                     "KingdomComeDeliverance.png")))
+           (mkdir-p (string-append out "/bin"))
+           (make-wine-wrapper launcher "KingdomCome Deliverance"
+                              #:game-path "Kingdom Come Deliverance")
+           (patch-shebang launcher (list (string-append bash "/bin")))
+           ;; TODO: Replace this substitute phase with g-exps.
+           (substitute* launcher
+             (("wine64") (string-append wine "/bin/wine64"))
+             (("setup_dxvk") (string-append dxvk "/bin/setup_dxvk")))
+           (mkdir-p (dirname icon))
+           (copy-file icon-source icon)
+           (make-desktop-entry-file
+            (string-append out "/share/applications/kingdomcome-deliverance.desktop")
+            #:name "Kingdom Come: Deliverance"
+            #:exec launcher
+            #:icon icon
+            #:categories '("Application" "Game")))
+         #t)))
+    (home-page "https://www.kingdomcomerpg.com/")
+    (synopsis "Story-driven open-world RPG, with historically accurate content")
+    (description "Kingdom Come: Deliverance is a story-driven open-world RPG
+that immerses you in an epic adventure in the Holy Roman Empire.
+
+The game data must be installed.  It is looked for at the path pointed to by the
+KINGDOMCOME_DELIVERANCE_PATH environment variable, which defaults to
+$GUIX_GAMING_PATH/Kingdom Come Deliverance.
+
+GUIX_GAMING_PATH defaults to \"~/Games\".
+
+The saves are stored in KINGDOMCOME_DELIVERANCE_SAVE_PATH, which defaults to
+\"GUIX_SAVE_PATH/Kingdom Come Deliverance\".
+
+GUIX_SAVE_PATH defaults to XDG_DATA_HOME, which defaults to \"~/.local/share\".
+
+The game uses Wine to run.  The Wine data is stored in
+KINGDOMCOME_DELIVERANCE_WINEPREFIX, which defaults to
+\"~/.cache/kingdomcome-deliverance\".")
+    (supported-systems '("x86_64-linux"))
+    (license (undistributable "No URL"))))
 
 #+end_src
 
