@@ -1113,6 +1113,15 @@ KINGDOMCOME_DELIVERANCE_WINEPREFIX, which defaults to
 
 #+end_src
 
+* PROJECT write btrfs-progs-btrbk package def
+:PROPERTIES:
+:CREATED:  [2022-07-06 Wed 15:38]
+:ID:       76e1ad39-6b4b-46b2-9b7f-f1ad933b6c2c
+:END:
+So we can use =backend_remote btrfs-progs-btrbk= backend for passwordless snapshots
+https://github.com/digint/btrfs-progs-btrbk
+https://digint.ch/btrbk/doc/readme.html
+
 * channel-n general
 :PROPERTIES:
 :CREATED:  [2022-01-22 Sat 18:34]
