@@ -1122,6 +1122,18 @@ So we can use =backend_remote btrfs-progs-btrbk= backend for passwordless snapsh
 https://github.com/digint/btrfs-progs-btrbk
 https://digint.ch/btrbk/doc/readme.html
 
+* PROJECT Write pagelables guix package definition
+:PROPERTIES:
+:CREATED:  [2022-06-22 Wed 16:51]
+:ID:       31069c58-63b6-4d76-9e2c-a603757a85b6
+:END:
+
+[[https://github.com/lovasoa/pagelabels-py][pagelabels]] package definition to be used in academic workflow.
+
+#+begin_src scheme
+
+#+end_src
+
 * channel-n general
 :PROPERTIES:
 :CREATED:  [2022-01-22 Sat 18:34]
