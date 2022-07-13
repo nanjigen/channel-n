@@ -900,7 +900,7 @@ A scheme definition based off
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (games packages supermemo18)
+(define-module (channel-n packages supermemo18)
   #:use-module (games utils)
   #:use-module (nonguix licenses)
   #:use-module (guix packages)
@@ -1033,6 +1033,9 @@ REPLACEMENT."
 :ID:       4dfbc704-8989-4338-b61a-a2cb7986e6df
 :END:
 
+warning: Please download sm18inst.exe from https://super-memo.com, place it in /home/nanjigen/.cache/winetricks/supermemo18, then re-run this script.
+supermemo.wiki/sm18
+wget https://www.supermemo.wiki/sm18 -O sm18inst.exe
 #+begin_src scheme
 ;; TODO: Use wine-dxvk.
 ;; TODO: Containerize.
@@ -1064,7 +1067,7 @@ REPLACEMENT."
                 (bash (assoc-ref %build-inputs "bash"))
                 (wine (assoc-ref %build-inputs "wine"))
                 (dxvk (assoc-ref %build-inputs "dxvk"))
-                (launcher (string-append out "/bin/kingdomcome-deliverance"))
+                (launcher (string-append out "sm18.exe"))
                 (make-wine-wrapper ,make-wine-wrapper)
                 (icon-source (assoc-ref %build-inputs "icon"))
                 (icon (string-append out "/share/kingdomcome-deliverance/"
